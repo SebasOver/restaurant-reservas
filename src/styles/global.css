@@ -1,0 +1,61 @@
+/* ============================================
+   SISTEMA DE DISEÑO — Restaurante Reservas
+   Estética: Lujo refinado / Editorial oscuro
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Paleta */
+  --color-bg:        #0d0b08;
+  --color-surface:   #141209;
+  --color-border:    #2a2318;
+  --color-gold:      #c9a96e;
+  --color-gold-dim:  #8a6f42;
+  --color-text:      #e8dcc8;
+  --color-text-muted:#7a6e5e;
+  --color-white:     #faf7f2;
+
+  /* Tipografía */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  /* Espaciado */
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  2rem;
+  --space-xl:  4rem;
+  --space-2xl: 8rem;
+
+  /* Transiciones */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-gold-dim); border-radius: 2px; }
+
+/* Selección de texto */
+::selection {
+  background: var(--color-gold);
+  color: var(--color-bg);
+}

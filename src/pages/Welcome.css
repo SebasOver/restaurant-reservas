@@ -1,0 +1,283 @@
+/* ============================================
+   WELCOME PAGE — Lujo refinado / Editorial
+   ============================================ */
+
+.welcome {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+/* --- Fondo decorativo --- */
+.welcome__bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.welcome__glow {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(201,169,110,0.08) 0%, transparent 70%);
+  animation: pulse 6s ease-in-out infinite;
+}
+
+.welcome__grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px;
+  opacity: 0.4;
+}
+
+.welcome__lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(201,169,110,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(201,169,110,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* --- Contenido principal --- */
+.welcome__main {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+  animation: fadeUp 1s var(--ease-out) both;
+}
+
+/* Badge */
+.welcome__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  border: 1px solid var(--color-border);
+  background: rgba(201,169,110,0.06);
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  animation: fadeUp 1s 0.1s var(--ease-out) both;
+}
+
+.welcome__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  animation: blink 2s ease-in-out infinite;
+}
+
+/* Título */
+.welcome__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: fadeUp 1s 0.2s var(--ease-out) both;
+}
+
+.welcome__title-sub {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.welcome__title-main {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 7rem);
+  font-weight: 600;
+  color: var(--color-white);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.welcome__title-accent {
+  font-size: 1rem;
+  color: var(--color-gold);
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Descripción */
+.welcome__description {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  max-width: 420px;
+  animation: fadeUp 1s 0.3s var(--ease-out) both;
+}
+
+/* Stack chips */
+.welcome__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  animation: fadeUp 1s 0.4s var(--ease-out) both;
+}
+
+.welcome__chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.welcome__chip:hover {
+  border-color: var(--color-gold-dim);
+  transform: translateY(-2px);
+}
+
+.welcome__chip-icon {
+  font-size: 1.1rem;
+}
+
+.welcome__chip-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.welcome__chip-sub {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Estado */
+.welcome__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 300;
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  animation: fadeUp 1s 0.5s var(--ease-out) both;
+}
+
+.welcome__status-dot {
+  font-size: 0.6rem;
+}
+
+/* Roadmap */
+.welcome__roadmap {
+  width: 100%;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+  animation: fadeUp 1s 0.6s var(--ease-out) both;
+}
+
+.welcome__roadmap-title {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.welcome__roadmap-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.welcome__roadmap-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.25rem;
+  border: 1px dashed var(--color-border);
+}
+
+.welcome__roadmap-n {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-gold-dim);
+}
+
+/* Footer */
+.welcome__footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 3rem;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: fadeUp 1s 0.7s var(--ease-out) both;
+}
+
+/* Animaciones */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50%       { opacity: 1;   transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .welcome__stack {
+    gap: 0.5rem;
+  }
+  .welcome__chip {
+    padding: 0.5rem 0.8rem;
+  }
+}
