@@ -1,0 +1,232 @@
+/* ── Formulario de Reserva · The Gordo ── */
+
+.rf {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-top: 3px solid var(--g-red);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Success state */
+.rf--success {
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+}
+
+.rf__success-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(200,41,42,0.15);
+  border: 2px solid var(--g-red);
+  color: var(--g-red);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.rf--success h3 {
+  font-family: var(--g-font-display);
+  font-size: 1.8rem;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+
+.rf--success p {
+  font-size: 0.88rem;
+  color: var(--g-muted);
+  line-height: 1.6;
+}
+
+/* Fields */
+.rf__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.rf__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 500px) {
+  .rf__row { grid-template-columns: 1fr; }
+}
+
+.rf__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g-muted);
+}
+
+.rf__input {
+  background: var(--g-dark);
+  border: 1px solid var(--g-border);
+  border-radius: 0.25rem;
+  color: var(--g-text);
+  font-family: var(--g-font-body);
+  font-size: 0.9rem;
+  padding: 0.65rem 0.9rem;
+  width: 100%;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.rf__input:focus {
+  outline: none;
+  border-color: var(--g-red);
+}
+
+.rf__input--error {
+  border-color: var(--g-red) !important;
+}
+
+.rf__input option {
+  background: var(--g-dark);
+  color: var(--g-text);
+}
+
+/* Date input color fix */
+.rf__input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* Counter */
+.rf__counter {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: fit-content;
+  border: 1px solid var(--g-border);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.rf__counter-btn {
+  background: var(--g-dark);
+  border: none;
+  color: var(--g-text);
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rf__counter-btn:hover { background: var(--g-border); }
+
+.rf__counter-val {
+  min-width: 48px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--g-surface);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--g-border);
+  border-right: 1px solid var(--g-border);
+}
+
+/* Mesas */
+.rf__mesas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.rf__mesa {
+  background: var(--g-dark);
+  border: 1px solid var(--g-border);
+  border-radius: 0.25rem;
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  transition: border-color 0.2s, background 0.2s;
+  min-width: 72px;
+}
+.rf__mesa:hover { border-color: var(--g-muted); }
+.rf__mesa--selected {
+  border-color: var(--g-red);
+  background: rgba(200,41,42,0.1);
+}
+
+.rf__mesa-n {
+  font-family: var(--g-font-display);
+  font-size: 1.1rem;
+  color: #fff;
+  line-height: 1;
+}
+.rf__mesa-cap {
+  font-size: 0.68rem;
+  color: var(--g-amber);
+  font-weight: 600;
+}
+.rf__mesa-ubi {
+  font-size: 0.62rem;
+  color: var(--g-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Feedback */
+.rf__error {
+  font-size: 0.72rem;
+  color: var(--g-red);
+  font-weight: 500;
+}
+
+.rf__hint {
+  font-size: 0.8rem;
+  color: var(--g-muted);
+  margin: 0;
+}
+
+.rf__alert {
+  background: rgba(200,41,42,0.1);
+  border: 1px solid rgba(200,41,42,0.3);
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: #f5a5a5;
+}
+
+/* Submit */
+.rf__btn {
+  background: var(--g-red);
+  color: #fff;
+  border: none;
+  font-family: var(--g-font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.95rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  margin-top: 0.25rem;
+}
+.rf__btn:hover:not(:disabled) { background: var(--g-red-dark); transform: translateY(-1px); }
+.rf__btn:disabled { opacity: 0.6; cursor: not-allowed; }
