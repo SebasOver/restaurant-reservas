@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { signIn } from '../services/authService'
 import { useAuth } from '../hooks/useAuth'
 import './Login.css'
@@ -12,10 +12,7 @@ export default function Login() {
   const [busy, setBusy]   = useState(false)
 
   // Si ya está logueado, redirigir al admin
-  if (!loading && user) {
-    navigate('/admin/reservas', { replace: true })
-    return null
-  }
+  if (!loading && user) return <Navigate to="/admin/reservas" replace />
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -25,7 +22,7 @@ export default function Login() {
       await signIn(form.email.trim(), form.password)
       navigate('/admin/reservas', { replace: true })
     } catch (err) {
-      setError('Credenciales incorrectas. Verifica tu email y contraseña.')
+      setError(err.message || 'Credenciales incorrectas. Verifica tu email y contraseña.')
     } finally {
       setBusy(false)
     }
