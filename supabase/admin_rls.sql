@@ -24,12 +24,3 @@ create policy "reservas_admin"
   using (true)
   with check (true);
 
--- ================================================================
--- PASOS PARA CREAR EL USUARIO ADMINISTRADOR
--- ================================================================
--- 1. Ve a Supabase → Authentication → Users
--- 2. Haz clic en "Add user"
--- 3. Ingresa el email y contraseña del administrador
--- 4. Haz clic en "Create user"
--- El admin ya puede iniciar sesión en /admin/login
--- ================================================================
