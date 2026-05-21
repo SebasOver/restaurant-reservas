@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getMesas } from '../services/mesasService'
 import { getHorarios } from '../services/horariosService'
-import { crearReserva } from '../services/reservasService'
+import { getReservas, crearReserva } from '../services/reservasService'
 import { validarReserva } from '../utils/validaciones'
 import { getDiaSemana, hoy } from '../utils/fechas'
 import './ReservaForm.css'
@@ -16,35 +16,82 @@ const ESTADO_INICIAL = {
   mesa_id:        '',
 }
 
+function getEstadoVisual(mesa, mesasReservadasIds, numPersonas) {
+  if (mesa.estado === 'bloqueada') return 'bloqueada'
+  if (mesa.estado === 'ocupada')   return 'ocupada'
+  if (mesasReservadasIds.has(mesa.id)) return 'reservada'
+  if (mesa.capacidad < Number(numPersonas)) return 'chica'
+  return 'disponible'
+}
+
 export default function ReservaForm() {
   const [form, setForm]         = useState(ESTADO_INICIAL)
   const [errores, setErrores]   = useState({})
-  const [mesas, setMesas]       = useState([])
+  const [todasMesas, setTodasMesas] = useState([])
   const [horarios, setHorarios] = useState([])
-  const [estado, setEstado]     = useState('idle') // idle | loading | success | error
+  const [mesasReservadasIds, setMesasReservadasIds] = useState(new Set())
+  const [loadingSlot, setLoadingSlot] = useState(false)
+  const [estado, setEstado]     = useState('idle')
   const [mensajeError, setMensajeError] = useState('')
 
   useEffect(() => {
-    getMesas('disponible').then(setMesas).catch(() => {})
+    getMesas().then(setTodasMesas).catch(() => {})
     getHorarios().then(setHorarios).catch(() => {})
   }, [])
 
-  // Filtra horarios según el día de la semana elegido
+  // Cuando cambia fecha+hora, recalcula qué mesas están reservadas en ese slot
+  useEffect(() => {
+    if (!form.fecha || !form.hora) {
+      setMesasReservadasIds(new Set())
+      return
+    }
+    setLoadingSlot(true)
+    getReservas(form.fecha)
+      .then(reservas => {
+        const ocupadas = reservas
+          .filter(r => r.hora === form.hora && r.estado === 'activa')
+          .map(r => r.mesa_id)
+        setMesasReservadasIds(new Set(ocupadas))
+      })
+      .catch(() => {})
+      .finally(() => setLoadingSlot(false))
+  }, [form.fecha, form.hora])
+
   const horariosFiltrados = form.fecha
     ? horarios.filter(h => h.dia_semana === getDiaSemana(form.fecha))
     : []
 
-  // Filtra mesas con capacidad >= num_personas
-  const mesasDisponibles = mesas.filter(m => m.capacidad >= Number(form.num_personas))
+  const mesasDisponibles = todasMesas.filter(m =>
+    getEstadoVisual(m, mesasReservadasIds, form.num_personas) === 'disponible'
+  )
+
+  // Agrupa mesas por ubicación para el salón
+  const mesasPorUbicacion = todasMesas.reduce((acc, m) => {
+    const ubi = m.ubicacion || 'General'
+    if (!acc[ubi]) acc[ubi] = []
+    acc[ubi].push(m)
+    return acc
+  }, {})
+
+  const mostrarSalon = form.fecha && form.hora
 
   function handleChange(e) {
     const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+    if (name === 'fecha') {
+      setForm(prev => ({ ...prev, fecha: value, hora: '', mesa_id: '' }))
+    } else if (name === 'num_personas') {
+      setForm(prev => ({ ...prev, num_personas: value, mesa_id: '' }))
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }))
+    }
     if (errores[name]) setErrores(prev => ({ ...prev, [name]: '' }))
-    // Si cambia fecha, resetea hora
-    if (name === 'fecha') setForm(prev => ({ ...prev, fecha: value, hora: '' }))
-    // Si cambia personas, resetea mesa
-    if (name === 'num_personas') setForm(prev => ({ ...prev, num_personas: value, mesa_id: '' }))
+  }
+
+  function seleccionarMesa(mesa) {
+    const ev = getEstadoVisual(mesa, mesasReservadasIds, form.num_personas)
+    if (ev !== 'disponible') return
+    setForm(prev => ({ ...prev, mesa_id: mesa.id }))
+    if (errores.mesa_id) setErrores(prev => ({ ...prev, mesa_id: '' }))
   }
 
   async function handleSubmit(e) {
@@ -128,7 +175,7 @@ export default function ReservaForm() {
           />
         </div>
       </div>
-      {errores.contacto  && <span className="rf__error">{errores.contacto}</span>}
+      {errores.contacto    && <span className="rf__error">{errores.contacto}</span>}
       {errores.cliente_email && <span className="rf__error">{errores.cliente_email}</span>}
 
       {/* Personas */}
@@ -172,7 +219,7 @@ export default function ReservaForm() {
             disabled={!form.fecha}
           >
             <option value="">
-              {!form.fecha ? 'Elige fecha primero' : horariosFiltrados.length === 0 ? 'No hay turnos' : 'Seleccionar hora'}
+              {!form.fecha ? 'Elige fecha primero' : horariosFiltrados.length === 0 ? 'Sin turnos disponibles' : 'Seleccionar hora'}
             </option>
             {horariosFiltrados.map(h => (
               <option key={h.id} value={h.hora_inicio}>
@@ -184,35 +231,70 @@ export default function ReservaForm() {
         </div>
       </div>
 
-      {/* Mesa */}
-      <div className="rf__field">
-        <label className="rf__label">Mesa *</label>
-        {mesasDisponibles.length === 0 ? (
-          <p className="rf__hint">No hay mesas disponibles para {form.num_personas} persona(s).</p>
+      {/* ── VISTA DEL SALÓN ── */}
+      <div className="salon">
+        <div className="salon__header">
+          <span className="salon__title">Vista del salón</span>
+          {loadingSlot && <span className="salon__loading">Verificando disponibilidad…</span>}
+          {mostrarSalon && !loadingSlot && (
+            <span className="salon__info">
+              {mesasDisponibles.length} mesa{mesasDisponibles.length !== 1 ? 's' : ''} disponible{mesasDisponibles.length !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
+
+        {!mostrarSalon ? (
+          <p className="salon__hint">Selecciona fecha y hora para ver la disponibilidad en tiempo real</p>
         ) : (
-          <div className="rf__mesas">
-            {mesasDisponibles.map(m => (
-              <button
-                type="button"
-                key={m.id}
-                className={`rf__mesa ${form.mesa_id === m.id ? 'rf__mesa--selected' : ''}`}
-                onClick={() => setForm(prev => ({ ...prev, mesa_id: m.id }))}
-              >
-                <span className="rf__mesa-n">#{m.numero}</span>
-                <span className="rf__mesa-cap">{m.capacidad} pers.</span>
-                {m.ubicacion && <span className="rf__mesa-ubi">{m.ubicacion}</span>}
-              </button>
+          <div className="salon__plano">
+            {Object.entries(mesasPorUbicacion).map(([ubicacion, mesas]) => (
+              <div className="salon__zona" key={ubicacion}>
+                <span className="salon__zona-label">{ubicacion}</span>
+                <div className="salon__mesas">
+                  {mesas.map(mesa => {
+                    const ev = getEstadoVisual(mesa, mesasReservadasIds, form.num_personas)
+                    const seleccionada = form.mesa_id === mesa.id
+                    return (
+                      <button
+                        type="button"
+                        key={mesa.id}
+                        className={`salon__mesa salon__mesa--${ev} ${seleccionada ? 'salon__mesa--sel' : ''}`}
+                        onClick={() => seleccionarMesa(mesa)}
+                        title={
+                          ev === 'reservada' ? 'Reservada en este horario'
+                          : ev === 'ocupada'  ? 'Ocupada'
+                          : ev === 'bloqueada'? 'Bloqueada'
+                          : ev === 'chica'    ? `Capacidad insuficiente (${mesa.capacidad} pers.)`
+                          : `Mesa #${mesa.numero} · ${mesa.capacidad} personas`
+                        }
+                      >
+                        <span className="salon__mesa-num">#{mesa.numero}</span>
+                        <span className="salon__mesa-cap">{mesa.capacidad}p</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             ))}
+
+            <div className="salon__entrada">ENTRADA</div>
+
+            <div className="salon__leyenda">
+              <span className="salon__ley-item salon__ley--disponible">Disponible</span>
+              <span className="salon__ley-item salon__ley--reservada">Reservada</span>
+              <span className="salon__ley-item salon__ley--ocupada">Ocupada</span>
+              <span className="salon__ley-item salon__ley--bloqueada">Bloqueada</span>
+              <span className="salon__ley-item salon__ley--chica">Sin capacidad</span>
+            </div>
           </div>
         )}
-        {errores.mesa_id && <span className="rf__error">{errores.mesa_id}</span>}
       </div>
+
+      {errores.mesa_id && <span className="rf__error">{errores.mesa_id}</span>}
 
       {/* Error global */}
       {estado === 'error' && (
-        <div className="rf__alert">
-          {mensajeError}
-        </div>
+        <div className="rf__alert">{mensajeError}</div>
       )}
 
       <button

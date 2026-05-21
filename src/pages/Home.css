@@ -1,7 +1,8 @@
 /* ============================================================
    HOME — The Gordo · Paleta: rojo, ámbar, negro profundo
-   Estética: Casual premium / Retro-moderno con carácter
    ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* ── Tokens de marca ── */
 :root {
@@ -21,9 +22,6 @@
   --g-font-display: 'Bebas Neue', 'Anton', impact, sans-serif;
   --g-font-body:    'DM Sans', sans-serif;
 }
-
-/* Importar Bebas Neue y DM Sans */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 .home {
   background: var(--g-black);
@@ -67,7 +65,6 @@
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(0); }
 
@@ -221,11 +218,7 @@
   overflow: hidden;
 }
 
-.hero__bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
+.hero__bg { position: absolute; inset: 0; pointer-events: none; }
 
 .hero__stripes {
   position: absolute;
@@ -328,125 +321,191 @@
 
 
 /* ═══════════════════════════════════════════
-   NOSOTROS
-═══════════════════════════════════════════ */
-.about {
-  background: var(--g-dark);
-  border-top: 1px solid var(--g-border);
-  border-bottom: 1px solid var(--g-border);
-  padding: 5rem 1.5rem;
-}
-
-.about__inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-.about__text p {
-  font-size: 0.95rem;
-  font-weight: 300;
-  color: var(--g-muted);
-  line-height: 1.8;
-  margin-bottom: 1rem;
-}
-
-.about__stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.stat {
-  background: var(--g-surface);
-  border: 1px solid var(--g-border);
-  border-top: 3px solid var(--g-red);
-  padding: 1.25rem;
-  border-radius: 0.25rem;
-}
-
-.stat__n {
-  display: block;
-  font-family: var(--g-font-display);
-  font-size: 2.5rem;
-  color: #fff;
-  line-height: 1;
-  margin-bottom: 0.25rem;
-}
-
-.stat__label {
-  font-size: 0.75rem;
-  color: var(--g-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-@media (max-width: 700px) {
-  .about__inner { grid-template-columns: 1fr; gap: 2.5rem; }
-}
-
-
-/* ═══════════════════════════════════════════
    MENÚ
 ═══════════════════════════════════════════ */
 .menu-section {
   padding: 5rem 1.5rem;
-  background: var(--g-black);
+  background: var(--g-dark);
+  border-top: 1px solid var(--g-border);
 }
 
 .menu-section__inner {
-  max-width: 1100px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1px;
-  background: var(--g-border);
+/* Tabs */
+.menu-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--g-border);
+  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+
+.menu-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--g-muted);
+  font-family: var(--g-font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.4rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+.menu-tab:hover { color: var(--g-text); }
+.menu-tab--active {
+  color: var(--g-amber);
+  border-bottom-color: var(--g-amber);
+}
+
+.menu-tab__count {
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.05rem 0.5rem;
+  color: var(--g-muted);
+  transition: background 0.2s, color 0.2s;
+}
+.menu-tab--active .menu-tab__count {
+  background: rgba(232,160,32,0.12);
+  border-color: rgba(232,160,32,0.3);
+  color: var(--g-amber);
+}
+
+/* Buscador */
+.menu-search {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.menu-search__icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--g-muted);
+  pointer-events: none;
+}
+.menu-search__input {
+  width: 100%;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: 0.35rem;
+  color: var(--g-text);
+  font-family: var(--g-font-body);
+  font-size: 0.88rem;
+  padding: 0.7rem 2.4rem 0.7rem 2.4rem;
+  transition: border-color 0.2s;
+}
+.menu-search__input:focus { outline: none; border-color: var(--g-amber); }
+.menu-search__input::placeholder { color: var(--g-muted); }
+.menu-search__clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--g-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.2rem;
+  transition: color 0.2s;
+}
+.menu-search__clear:hover { color: var(--g-text); }
+
+/* Encabezado categoría */
+.menu-cat-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.menu-cat-title {
+  font-family: var(--g-font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  line-height: 1;
+}
+.menu-cat-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--g-amber);
+}
+
+/* Lista de items */
+.menu-list {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--g-border);
   border-radius: 0.5rem;
   overflow: hidden;
-  margin-top: 2rem;
 }
 
-.menu-card {
-  background: var(--g-dark);
-  padding: 1.5rem;
-  transition: background 0.2s;
-}
-.menu-card:hover { background: var(--g-surface); }
-
-.menu-card__top {
+.menu-item {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+  gap: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--g-border);
+  background: var(--g-black);
+  transition: background 0.15s;
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item:hover { background: var(--g-surface); }
+
+.menu-item__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
-.menu-card h3 {
+.menu-item__nombre {
   font-family: var(--g-font-display);
-  font-size: 1.25rem;
-  color: #fff;
+  font-size: 1.15rem;
   letter-spacing: 0.04em;
+  color: #fff;
+  line-height: 1;
 }
 
-.menu-card__precio {
-  font-size: 0.9rem;
-  font-weight: 600;
+.menu-item__desc {
+  font-size: 0.78rem;
+  color: var(--g-muted);
+  line-height: 1.5;
+}
+
+.menu-item__precio {
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--g-amber);
   white-space: nowrap;
-  margin-top: 0.15rem;
+  flex-shrink: 0;
 }
 
-.menu-card p {
-  font-size: 0.82rem;
+.menu-empty {
+  font-size: 0.88rem;
   color: var(--g-muted);
-  line-height: 1.6;
+  padding: 2rem 0;
+  text-align: center;
 }
 
 
@@ -454,7 +513,7 @@
    RESERVAS SECCIÓN
 ═══════════════════════════════════════════ */
 .reservas-section {
-  background: var(--g-dark);
+  background: var(--g-black);
   border-top: 1px solid var(--g-border);
   padding: 5rem 1.5rem;
 }
@@ -487,10 +546,7 @@
   gap: 0.9rem;
 }
 
-.dato__icon {
-  font-size: 1.1rem;
-  margin-top: 0.1rem;
-}
+.dato__icon { font-size: 1.1rem; margin-top: 0.1rem; }
 
 .dato div {
   display: flex;
