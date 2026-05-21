@@ -3,7 +3,7 @@ import { getMesas } from '../services/mesasService'
 import { getHorarios } from '../services/horariosService'
 import { getReservas, crearReserva } from '../services/reservasService'
 import { validarReserva } from '../utils/validaciones'
-import { getDiaSemana, hoy } from '../utils/fechas'
+import { getDiaSemana, hoy, generarSlots } from '../utils/fechas'
 import './ReservaForm.css'
 
 const ESTADO_INICIAL = {
@@ -60,6 +60,11 @@ export default function ReservaForm() {
   const horariosFiltrados = form.fecha
     ? horarios.filter(h => h.dia_semana === getDiaSemana(form.fecha))
     : []
+
+  // Genera turnos de 1 hora a partir de cada rango horario del día
+  const slotsDelDia = horariosFiltrados.flatMap(h =>
+    generarSlots(h.hora_inicio, h.hora_fin)
+  )
 
   const mesasDisponibles = todasMesas.filter(m =>
     getEstadoVisual(m, mesasReservadasIds, form.num_personas) === 'disponible'
@@ -219,12 +224,10 @@ export default function ReservaForm() {
             disabled={!form.fecha}
           >
             <option value="">
-              {!form.fecha ? 'Elige fecha primero' : horariosFiltrados.length === 0 ? 'Sin turnos disponibles' : 'Seleccionar hora'}
+              {!form.fecha ? 'Elige fecha primero' : slotsDelDia.length === 0 ? 'Sin turnos disponibles' : 'Seleccionar hora'}
             </option>
-            {horariosFiltrados.map(h => (
-              <option key={h.id} value={h.hora_inicio}>
-                {h.hora_inicio.slice(0,5)} – {h.hora_fin.slice(0,5)}
-              </option>
+            {slotsDelDia.map(slot => (
+              <option key={slot.value} value={slot.value}>{slot.label}</option>
             ))}
           </select>
           {errores.hora && <span className="rf__error">{errores.hora}</span>}

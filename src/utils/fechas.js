@@ -49,3 +49,37 @@ export function hoy() {
 export function esFechaPasada(fecha) {
   return fecha < hoy()
 }
+
+/**
+ * Genera slots de reserva de `duracionMin` minutos dentro de un rango horario.
+ * Maneja correctamente rangos que cruzan la medianoche.
+ * @param {string} horaInicioStr  - 'HH:MM' o 'HH:MM:SS'
+ * @param {string} horaFinStr     - 'HH:MM' o 'HH:MM:SS'
+ * @param {number} duracionMin    - duración de cada turno en minutos (default 60)
+ * @returns {{ value: string, label: string }[]}
+ */
+export function generarSlots(horaInicioStr, horaFinStr, duracionMin = 60) {
+  const toMin = str => {
+    const [h, m] = str.split(':').map(Number)
+    return h * 60 + m
+  }
+  const toStr = min => {
+    const total = min % (24 * 60)
+    const h = Math.floor(total / 60)
+    const m = total % 60
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+  }
+
+  let inicio = toMin(horaInicioStr)
+  let fin    = toMin(horaFinStr)
+  if (fin <= inicio) fin += 24 * 60  // cruza medianoche
+
+  const slots = []
+  for (let cur = inicio; cur + duracionMin <= fin; cur += duracionMin) {
+    slots.push({
+      value: toStr(cur) + ':00',
+      label: `${toStr(cur)} – ${toStr(cur + duracionMin)}`,
+    })
+  }
+  return slots
+}

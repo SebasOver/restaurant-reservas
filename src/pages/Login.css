@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+.login-page {
+  min-height: 100vh;
+  background: #0F0C08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-image: repeating-linear-gradient(
+    -45deg, transparent, transparent 60px,
+    rgba(200,41,42,0.03) 60px, rgba(200,41,42,0.03) 61px
+  );
+}
+
+.login-card {
+  background: #1A1410;
+  border: 1px solid #2E2720;
+  border-top: 3px solid #C8292A;
+  border-radius: 0.5rem;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.login-logo__the {
+  font-family: 'Bebas Neue', impact, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.45em;
+  color: #E8A020;
+}
+.login-logo__gordo {
+  font-family: 'Bebas Neue', impact, sans-serif;
+  font-size: 2.8rem;
+  letter-spacing: 0.06em;
+  color: #fff;
+  line-height: 0.85;
+}
+.login-logo__sub {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7A6E60;
+  margin-top: 0.5rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7A6E60;
+}
+
+.login-input {
+  background: #0F0C08;
+  border: 1px solid #2E2720;
+  border-radius: 0.25rem;
+  color: #EDE4D6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.login-input:focus { outline: none; border-color: #C8292A; }
+.login-input::placeholder { color: #7A6E60; }
+
+.login-error {
+  background: rgba(200,41,42,0.1);
+  border: 1px solid rgba(200,41,42,0.3);
+  border-radius: 0.25rem;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.8rem;
+  color: #f5a5a5;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.login-btn {
+  background: #C8292A;
+  color: #fff;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.9rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.25rem;
+}
+.login-btn:hover:not(:disabled) { background: #9E1A1B; }
+.login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.login-back {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #7A6E60;
+  text-align: center;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.login-back:hover { color: #EDE4D6; }
