@@ -139,14 +139,6 @@ El rol de admin se verifica mediante la función PostgreSQL `is_admin()`, que co
 
 ---
 
-## Desarrollo local
-
-```bash
-npm install
-cp .env.example .env
-npm run dev
-```
-
 ## Despliegue
 
 El proyecto se despliega automáticamente en Vercel con cada push a `main`. Configura las variables de entorno `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en el Dashboard de Vercel.
