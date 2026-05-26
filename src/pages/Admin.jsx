@@ -44,7 +44,9 @@ export default function Admin() {
         </nav>
 
         <div className="adm-side__footer">
-          <span className="adm-side__email">{user?.email}</span>
+          <span className="adm-side__email">
+            {user?.email?.replace(/^(.{2}).+(@.+)$/, '$1***$2')}
+          </span>
           <button className="adm-side__logout" onClick={handleSignOut}>
             Cerrar sesión
           </button>

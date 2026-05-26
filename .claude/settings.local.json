@@ -3,7 +3,8 @@
     "allow": [
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\JSEBA\\\\OneDrive\\\\Escritorio\\\\restaurant-reservas\" -Recurse -Force)",
       "Bash(Select-Object FullName)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(Get-ChildItem -Path . -Name)"
     ]
   }
 }

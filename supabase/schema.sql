@@ -75,11 +75,13 @@ alter table public.mesas    enable row level security;
 alter table public.horarios enable row level security;
 alter table public.reservas enable row level security;
 
+-- Mesas y horarios: lectura pública (el formulario los necesita)
 create policy "mesas_lectura_publica"    on public.mesas    for select using (true);
 create policy "horarios_lectura_publica" on public.horarios for select using (true);
-create policy "reservas_lectura_publica" on public.reservas for select using (true);
-create policy "reservas_insertar"        on public.reservas for insert with check (true);
-create policy "reservas_actualizar"      on public.reservas for update using (true);
+
+-- Reservas: INSERT público (clientes crean reservas sin cuenta)
+-- SELECT y UPDATE solo para admins autenticados (ver admin_rls.sql)
+create policy "reservas_insertar" on public.reservas for insert with check (true);
 
 
 -- ================================================================

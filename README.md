@@ -1,49 +1,61 @@
-# 🍽️ Sistema de Reservas — Restaurante - Johan Tarazona - 01220371054
+# Sistema de Reservas — The Gordo Restaurant
 
-> **Etapa 1 completada:** Proyecto ejecutándose localmente y desplegado en Vercel.
+Sistema web de reservas de mesas para restaurante, con panel de administración protegido.
 
-## 🛠️ Stack tecnológico
+## Stack tecnológico
 
 | Capa | Tecnología | Rol |
 |------|-----------|-----|
-| Presentación | React 18 + CSS | Interfaz de usuario, estado local |
+| Frontend | React 18 + CSS puro | Interfaz de usuario, estado local |
+| Routing | React Router DOM 6 | Navegación SPA |
 | Lógica de negocio | JavaScript ES6+ | Validaciones, disponibilidad, errores |
-| Datos (Backend) | Supabase (PostgreSQL + REST) | Mesas, reservas, horarios, auth |
-| Despliegue | Vercel + GitHub | CI/CD — cada push a main despliega |
+| Backend / Datos | Supabase (PostgreSQL + Auth + REST) | Mesas, reservas, horarios, autenticación |
+| Despliegue | Vercel + GitHub | CI/CD — cada push a `main` despliega automáticamente |
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 restaurant-reservas/
 ├── public/
 │   └── favicon.svg
 ├── src/
-│   ├── components/          -- Componentes reutilizables de UI
-│   ├── pages/               -- Páginas principales (Home, Admin, etc.)
-│   │   ├── Welcome.jsx      -- Pantalla de bienvenida (Etapa 1)
-│   │   └── Welcome.css
-│   ├── services/            -- Lógica de comunicación con Supabase
-│   │   ├── mesasService.js
-│   │   ├── reservasService.js
-│   │   └── horariosService.js
-│   ├── hooks/               -- Custom hooks de React
+│   ├── components/
+│   │   ├── ProtectedRoute.jsx    # Guard de rutas admin (requiere rol admin)
+│   │   └── ReservaForm.jsx       # Formulario público de reservas
+│   ├── context/
+│   │   └── AppContext.jsx        # Estado global (Context API)
+│   ├── hooks/
+│   │   ├── useAuth.js            # Sesión + verificación de rol admin
 │   │   ├── useMesas.js
 │   │   └── useReservas.js
-│   ├── context/             -- Estado global (Context API)
-│   │   └── AppContext.jsx
-│   ├── styles/              -- Archivos CSS
-│   │   └── global.css
-│   ├── utils/               -- Funciones auxiliares
-│   │   ├── fechas.js
-│   │   └── validaciones.js
 │   ├── lib/
-│   │   └── supabase.js      -- Cliente Supabase
+│   │   └── supabase.js           # Cliente Supabase
+│   ├── pages/
+│   │   ├── Home.jsx              # Página pública con formulario de reservas
+│   │   ├── Welcome.jsx           # Pantalla de bienvenida
+│   │   ├── Login.jsx             # Login del panel admin
+│   │   ├── Admin.jsx             # Layout del panel admin (sidebar + outlet)
+│   │   └── admin/
+│   │       ├── ReservasAdmin.jsx
+│   │       ├── MesasAdmin.jsx
+│   │       └── HorariosAdmin.jsx
+│   ├── services/
+│   │   ├── authService.js        # signIn / signOut / getSession
+│   │   ├── mesasService.js
+│   │   ├── horariosService.js
+│   │   └── reservasService.js
+│   ├── styles/
+│   │   └── global.css
+│   ├── utils/
+│   │   ├── fechas.js
+│   │   └── validaciones.js       # Validaciones del formulario (frontend)
 │   ├── App.jsx
 │   └── main.jsx
 ├── supabase/
-│   └── schema.sql           -- Esquema de base de datos
+│   ├── schema.sql                # Tablas, RLS base y datos de ejemplo
+│   └── admin_rls.sql             # Tabla admins, función is_admin() y políticas admin
 ├── .env.example
 ├── .gitignore
 ├── index.html
@@ -53,7 +65,7 @@ restaurant-reservas/
 
 ---
 
-## 🗄️ Base de datos (Supabase)
+## Base de datos (Supabase)
 
 ### Tabla: `mesas`
 | Campo | Tipo | Descripción |
@@ -88,8 +100,80 @@ restaurant-reservas/
 | estado | TEXT | `activa` / `cancelada` / `completada` |
 | created_at | TIMESTAMP | Fecha de creación |
 
+### Tabla: `admins`
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| user_id | UUID (PK, FK) | Referencia a `auth.users(id)` |
+| email | TEXT | Email del administrador |
+
 ### Relaciones
-- **1 mesa → N reservas** (campo `mesa_id` en `reservas`)
+- **1 mesa → N reservas** (`mesa_id` en `reservas`)
 - **Los horarios son globales** — independientes de las mesas
+- **1 usuario de Auth → 1 registro en admins** (para rol de administrador)
 
 ---
+
+## Seguridad (Row Level Security)
+
+| Tabla | Operación | Quién puede |
+|-------|-----------|-------------|
+| `mesas` | SELECT | Público (necesario para el formulario) |
+| `mesas` | INSERT / UPDATE / DELETE | Solo admins |
+| `horarios` | SELECT | Público |
+| `horarios` | INSERT / UPDATE / DELETE | Solo admins |
+| `reservas` | INSERT | Público (clientes crean reservas sin cuenta) |
+| `reservas` | SELECT / UPDATE / DELETE | Solo admins |
+| `admins` | SELECT | Solo el propio admin (ve su propio registro) |
+
+El rol de admin se verifica mediante la función PostgreSQL `is_admin()`, que comprueba si el `auth.uid()` del usuario autenticado está en la tabla `admins`. Esto protege las operaciones tanto a nivel de base de datos como en el frontend.
+
+---
+
+## Variables de entorno
+
+Copia `.env.example` a `.env` y completa los valores:
+
+```env
+VITE_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+VITE_SUPABASE_ANON_KEY=<tu-anon-key>
+```
+
+Las variables `VITE_*` son visibles en el bundle del navegador — esto es normal para la `anon key` de Supabase (es pública por diseño). La seguridad real la provee RLS en la base de datos.
+
+---
+
+## Configuración inicial en Supabase
+
+1. Ejecuta `supabase/schema.sql` en el SQL Editor de Supabase.
+2. Ejecuta `supabase/admin_rls.sql` en el SQL Editor de Supabase.
+3. Crea el usuario administrador en **Authentication > Users** del Dashboard de Supabase.
+4. Copia el UUID del usuario creado y ejecuta en el SQL Editor:
+
+```sql
+insert into public.admins (user_id, email)
+values ('<UUID del usuario>', '<email del admin>');
+```
+
+---
+
+## Credenciales del panel de administración
+
+| Campo | Valor |
+|-------|-------|
+| Email | johansebastiantarazonadiaz@gmail.com |
+| Contraseña | sebast17 |
+| URL del panel | `/admin/login` |
+
+---
+
+## Desarrollo local
+
+```bash
+npm install
+cp .env.example .env   # Completa con tus credenciales de Supabase
+npm run dev
+```
+
+## Despliegue
+
+El proyecto se despliega automáticamente en Vercel con cada push a `main`. Configura las variables de entorno `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en el Dashboard de Vercel.
