@@ -270,34 +270,41 @@ export default function HorariosAdmin() {
             </div>
 
             {/* Preview de slots */}
-            {form.hora_inicio && form.hora_fin && (
-              <div style={{
-                background: 'var(--a-black)', border: '1px solid var(--a-border)',
-                borderRadius: '0.35rem', padding: '0.75rem',
-              }}>
-                <p style={{ fontSize: '0.65rem', color: 'var(--a-muted)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Turnos generados
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                  {generarSlots(form.hora_inicio, form.hora_fin).map(s => (
-                    <span key={s.value} style={{
-                      fontSize: '0.7rem', fontWeight: 600,
-                      padding: '0.2rem 0.6rem',
-                      border: '1px solid rgba(232,160,32,0.3)',
-                      borderRadius: '20px', color: 'var(--a-amber)',
-                      background: 'rgba(232,160,32,0.06)',
-                    }}>
-                      {s.label}
-                    </span>
-                  ))}
-                  {generarSlots(form.hora_inicio, form.hora_fin).length === 0 && (
+            {form.hora_inicio && form.hora_fin && (() => {
+              const slots = generarSlots(form.hora_inicio, form.hora_fin)
+              return (
+                <div style={{
+                  background: 'var(--a-black)', border: '1px solid var(--a-border)',
+                  borderRadius: '0.35rem', padding: '0.75rem',
+                }}>
+                  <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--a-text)', marginBottom: '0.25rem' }}>
+                    ¿Qué verán los clientes?
+                  </p>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--a-muted)', marginBottom: '0.6rem' }}>
+                    Estas son las horas que aparecerán disponibles para reservar en este día:
+                  </p>
+                  {slots.length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                      {slots.map(s => (
+                        <span key={s.value} style={{
+                          fontSize: '0.7rem', fontWeight: 600,
+                          padding: '0.2rem 0.6rem',
+                          border: '1px solid rgba(232,160,32,0.3)',
+                          borderRadius: '20px', color: 'var(--a-amber)',
+                          background: 'rgba(232,160,32,0.06)',
+                        }}>
+                          {s.label}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
                     <span style={{ fontSize: '0.72rem', color: 'var(--a-muted)' }}>
-                      El rango debe ser de al menos 1 hora
+                      El rango debe ser de al menos 1 hora para generar horarios disponibles.
                     </span>
                   )}
                 </div>
-              </div>
-            )}
+              )
+            })()}
 
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
               <label className="adm-toggle">
