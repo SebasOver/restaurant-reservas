@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react'
 import { getMesas, crearMesa, actualizarMesa, eliminarMesa } from '../../services/mesasService'
+import ConfirmModal from '../../components/ConfirmModal'
 
 const ESTADOS  = ['disponible', 'ocupada', 'bloqueada']
 const FORM_INI = { numero: '', capacidad: '', ubicacion: '', estado: 'disponible' }
 
 export default function MesasAdmin() {
-  const [mesas, setMesas]     = useState([])
-  const [loading, setLoading] = useState(true)
-  const [modal, setModal]     = useState(false)      // 'crear' | 'editar' | false
-  const [seleccion, setSel]   = useState(null)       // mesa editando
-  const [form, setForm]       = useState(FORM_INI)
-  const [formErr, setFormErr] = useState('')
-  const [busy, setBusy]       = useState(false)
+  const [mesas, setMesas]             = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [modal, setModal]             = useState(false)      // 'crear' | 'editar' | false
+  const [seleccion, setSel]           = useState(null)
+  const [form, setForm]               = useState(FORM_INI)
+  const [formErr, setFormErr]         = useState('')
+  const [busy, setBusy]               = useState(false)
+  const [confirmId, setConfirmId]     = useState(null)
+  const [ubicacionNueva, setUbicNueva] = useState(false)
 
   async function cargar() {
     setLoading(true)
@@ -21,14 +24,19 @@ export default function MesasAdmin() {
 
   useEffect(() => { cargar() }, [])
 
+  const opcionesUbicacion = [...new Set(mesas.filter(m => m.ubicacion).map(m => m.ubicacion))]
+
   function abrirCrear() {
     setForm(FORM_INI)
     setFormErr('')
     setSel(null)
+    setUbicNueva(false)
     setModal('crear')
   }
 
   function abrirEditar(mesa) {
+    const esCustom = !!mesa.ubicacion && !opcionesUbicacion.includes(mesa.ubicacion)
+    setUbicNueva(esCustom)
     setForm({
       numero:    String(mesa.numero),
       capacidad: String(mesa.capacidad),
@@ -65,10 +73,14 @@ export default function MesasAdmin() {
     }
   }
 
-  async function borrar(id) {
-    if (!confirm('¿Eliminar esta mesa? Se perderán los datos asociados.')) return
-    try { await eliminarMesa(id); await cargar() }
+  function borrar(id) {
+    setConfirmId(id)
+  }
+
+  async function confirmarBorrar() {
+    try { await eliminarMesa(confirmId); await cargar() }
     catch (e) { alert(e.message) }
+    finally { setConfirmId(null) }
   }
 
   async function cambiarEstado(mesa, estado) {
@@ -160,6 +172,15 @@ export default function MesasAdmin() {
         </div>
       )}
 
+      {/* Modal confirmación eliminar */}
+      {confirmId && (
+        <ConfirmModal
+          mensaje="Esta acción eliminará la mesa permanentemente. Se perderán los datos asociados y no se puede deshacer."
+          onConfirmar={confirmarBorrar}
+          onCancelar={() => setConfirmId(null)}
+        />
+      )}
+
       {/* Modal crear/editar */}
       {modal && (
         <div className="adm-overlay" onClick={e => { if (e.target === e.currentTarget) setModal(false) }}>
@@ -173,9 +194,10 @@ export default function MesasAdmin() {
                 <label className="adm-modal__label">Número *</label>
                 <input
                   className="adm-modal__input"
-                  type="number" min="1"
+                  type="text"
+                  inputMode="numeric"
                   value={form.numero}
-                  onChange={e => setForm(p => ({ ...p, numero: e.target.value }))}
+                  onChange={e => setForm(p => ({ ...p, numero: e.target.value.replace(/\D/g, '') }))}
                   placeholder="1"
                 />
               </div>
@@ -183,9 +205,10 @@ export default function MesasAdmin() {
                 <label className="adm-modal__label">Capacidad *</label>
                 <input
                   className="adm-modal__input"
-                  type="number" min="1"
+                  type="text"
+                  inputMode="numeric"
                   value={form.capacidad}
-                  onChange={e => setForm(p => ({ ...p, capacidad: e.target.value }))}
+                  onChange={e => setForm(p => ({ ...p, capacidad: e.target.value.replace(/\D/g, '') }))}
                   placeholder="4"
                 />
               </div>
@@ -193,13 +216,34 @@ export default function MesasAdmin() {
 
             <div className="adm-modal__field">
               <label className="adm-modal__label">Ubicación / Zona</label>
-              <input
+              <select
                 className="adm-modal__input"
-                type="text"
-                value={form.ubicacion}
-                onChange={e => setForm(p => ({ ...p, ubicacion: e.target.value }))}
-                placeholder="Interior, Terraza, Ventana…"
-              />
+                value={ubicacionNueva ? '__nueva__' : (form.ubicacion || '')}
+                onChange={e => {
+                  if (e.target.value === '__nueva__') {
+                    setUbicNueva(true)
+                    setForm(p => ({ ...p, ubicacion: '' }))
+                  } else {
+                    setUbicNueva(false)
+                    setForm(p => ({ ...p, ubicacion: e.target.value }))
+                  }
+                }}
+              >
+                <option value="">Sin especificar</option>
+                {opcionesUbicacion.map(u => <option key={u} value={u}>{u}</option>)}
+                <option value="__nueva__">+ Crear nueva ubicación…</option>
+              </select>
+              {ubicacionNueva && (
+                <input
+                  className="adm-modal__input"
+                  type="text"
+                  style={{ marginTop: '0.5rem' }}
+                  placeholder="Ej: Terraza, Salón VIP…"
+                  value={form.ubicacion}
+                  onChange={e => setForm(p => ({ ...p, ubicacion: e.target.value }))}
+                  autoFocus
+                />
+              )}
             </div>
 
             <div className="adm-modal__field">

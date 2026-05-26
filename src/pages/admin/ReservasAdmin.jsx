@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getReservas, cancelarReserva, completarReserva, eliminarReserva } from '../../services/reservasService'
 import { formatearFecha, formatearHora, hoy } from '../../utils/fechas'
+import ConfirmModal from '../../components/ConfirmModal'
 
 const ESTADOS = ['todos', 'activa', 'completada', 'cancelada']
 
@@ -9,7 +10,8 @@ export default function ReservasAdmin() {
   const [loading, setLoading]     = useState(true)
   const [fecha, setFecha]         = useState(hoy())
   const [filtroEstado, setFiltro] = useState('todos')
-  const [busy, setBusy]           = useState(null) // id de la reserva en acción
+  const [busy, setBusy]           = useState(null)
+  const [confirmId, setConfirmId] = useState(null)
 
   const cargar = useCallback(async () => {
     setLoading(true)
@@ -40,8 +42,20 @@ export default function ReservasAdmin() {
     finally { setBusy(null) }
   }
 
+  async function confirmarBorrar() {
+    await accion(eliminarReserva, confirmId)
+    setConfirmId(null)
+  }
+
   return (
     <div className="adm-section">
+      {confirmId && (
+        <ConfirmModal
+          mensaje="Esta acción eliminará la reserva permanentemente y no se puede deshacer."
+          onConfirmar={confirmarBorrar}
+          onCancelar={() => setConfirmId(null)}
+        />
+      )}
       <div className="adm-section__head">
         <div>
           <h1 className="adm-section__title">Reservas</h1>
@@ -162,10 +176,7 @@ export default function ReservasAdmin() {
                       <button
                         className="adm-btn adm-btn--sm adm-btn--ghost"
                         disabled={busy === r.id}
-                        onClick={() => {
-                          if (confirm('¿Eliminar esta reserva permanentemente?'))
-                            accion(eliminarReserva, r.id)
-                        }}
+                        onClick={() => setConfirmId(r.id)}
                         style={{ fontSize: '0.65rem' }}
                       >
                         ✕

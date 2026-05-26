@@ -1,6 +1,48 @@
 import { useState, useEffect } from 'react'
 import { getTodosHorarios, crearHorario, actualizarHorario, eliminarHorario } from '../../services/horariosService'
 import { generarSlots } from '../../utils/fechas'
+import ConfirmModal from '../../components/ConfirmModal'
+
+const HORAS  = ['1','2','3','4','5','6','7','8','9','10','11','12']
+const MINUTOS = ['00','15','30','45']
+
+function to24h(h, m, period) {
+  let hour = parseInt(h)
+  if (period === 'PM' && hour !== 12) hour += 12
+  if (period === 'AM' && hour === 12) hour = 0
+  return `${String(hour).padStart(2, '0')}:${m}`
+}
+
+function from24h(time24) {
+  if (!time24) return ['12', '00', 'PM']
+  const [hStr, mStr] = time24.split(':')
+  let h = parseInt(hStr)
+  const period = h >= 12 ? 'PM' : 'AM'
+  h = h % 12 || 12
+  return [String(h), mStr || '00', period]
+}
+
+function TimePicker({ value, onChange }) {
+  const [h, m, period] = from24h(value)
+  const update = (nh, nm, np) => onChange(to24h(nh, nm, np))
+  return (
+    <div style={{ display: 'flex', gap: '0.4rem' }}>
+      <select className="adm-modal__input" value={h}
+        onChange={e => update(e.target.value, m, period)}>
+        {HORAS.map(hh => <option key={hh} value={hh}>{hh}</option>)}
+      </select>
+      <select className="adm-modal__input" value={m}
+        onChange={e => update(h, e.target.value, period)}>
+        {MINUTOS.map(mm => <option key={mm} value={mm}>{mm}</option>)}
+      </select>
+      <select className="adm-modal__input" value={period}
+        onChange={e => update(h, m, e.target.value)}>
+        <option>AM</option>
+        <option>PM</option>
+      </select>
+    </div>
+  )
+}
 
 const DIAS = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']
 const DIAS_LABEL = {
@@ -10,12 +52,13 @@ const DIAS_LABEL = {
 const FORM_INI = { dia_semana: 'lunes', hora_inicio: '16:00', hora_fin: '23:00', activo: true }
 
 export default function HorariosAdmin() {
-  const [horarios, setHorarios] = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [modal, setModal]       = useState(false)
-  const [form, setForm]         = useState(FORM_INI)
-  const [formErr, setFormErr]   = useState('')
-  const [busy, setBusy]         = useState(false)
+  const [horarios, setHorarios]   = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [modal, setModal]         = useState(false)
+  const [form, setForm]           = useState(FORM_INI)
+  const [formErr, setFormErr]     = useState('')
+  const [busy, setBusy]           = useState(false)
+  const [confirmId, setConfirmId] = useState(null)
 
   async function cargar() {
     setLoading(true)
@@ -54,9 +97,13 @@ export default function HorariosAdmin() {
   }
 
   async function borrar(id) {
-    if (!confirm('¿Eliminar este horario?')) return
-    try { await eliminarHorario(id); await cargar() }
+    setConfirmId(id)
+  }
+
+  async function confirmarBorrar() {
+    try { await eliminarHorario(confirmId); await cargar() }
     catch (e) { alert(e.message) }
+    finally { setConfirmId(null) }
   }
 
   // Agrupa horarios por día
@@ -179,6 +226,15 @@ export default function HorariosAdmin() {
         </div>
       )}
 
+      {/* Modal confirmación eliminar */}
+      {confirmId && (
+        <ConfirmModal
+          mensaje="Esta acción eliminará el rango horario permanentemente y no se puede deshacer."
+          onConfirmar={confirmarBorrar}
+          onCancelar={() => setConfirmId(null)}
+        />
+      )}
+
       {/* Modal nuevo rango */}
       {modal && (
         <div className="adm-overlay" onClick={e => { if (e.target === e.currentTarget) setModal(false) }}>
@@ -199,20 +255,16 @@ export default function HorariosAdmin() {
             <div className="adm-modal__row">
               <div className="adm-modal__field">
                 <label className="adm-modal__label">Hora inicio</label>
-                <input
-                  className="adm-modal__input"
-                  type="time"
+                <TimePicker
                   value={form.hora_inicio}
-                  onChange={e => setForm(p => ({ ...p, hora_inicio: e.target.value }))}
+                  onChange={v => setForm(p => ({ ...p, hora_inicio: v }))}
                 />
               </div>
               <div className="adm-modal__field">
                 <label className="adm-modal__label">Hora fin</label>
-                <input
-                  className="adm-modal__input"
-                  type="time"
+                <TimePicker
                   value={form.hora_fin}
-                  onChange={e => setForm(p => ({ ...p, hora_fin: e.target.value }))}
+                  onChange={v => setForm(p => ({ ...p, hora_fin: v }))}
                 />
               </div>
             </div>

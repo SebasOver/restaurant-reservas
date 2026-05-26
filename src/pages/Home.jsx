@@ -145,7 +145,7 @@ export default function Home() {
         </div>
         <div className="hero__badge">
           <span>Horario</span>
-          <strong>Lun–Vie · 4 pm – 12:30 am</strong>
+          <strong>Lun–Sáb · 4 pm – 12:30 am</strong>
         </div>
       </section>
 
@@ -233,7 +233,7 @@ export default function Home() {
                 <span className="dato__icon">🕐</span>
                 <div>
                   <strong>Horario</strong>
-                  <span>Lun – Vie · 4:00 pm – 12:30 am</span>
+                  <span>Lun – Sáb · 4:00 pm – 12:30 am</span>
                 </div>
               </div>
               <div className="dato">
@@ -258,7 +258,7 @@ export default function Home() {
             <span className="nav__logo-the">THE</span>
             <span className="nav__logo-gordo">GORDO</span>
           </div>
-          <p>© 2025 The Gordo · Comidas Rápidas · Bucaramanga</p>
+          <p>© 2026 The Gordo · Comidas Rápidas · Bucaramanga</p>
         </div>
       </footer>
 
