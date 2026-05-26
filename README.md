@@ -129,33 +129,6 @@ El rol de admin se verifica mediante la función PostgreSQL `is_admin()`, que co
 
 ---
 
-## Variables de entorno
-
-Copia `.env.example` a `.env` y completa los valores:
-
-```env
-VITE_SUPABASE_URL=https://<tu-proyecto>.supabase.co
-VITE_SUPABASE_ANON_KEY=<tu-anon-key>
-```
-
-Las variables `VITE_*` son visibles en el bundle del navegador — esto es normal para la `anon key` de Supabase (es pública por diseño). La seguridad real la provee RLS en la base de datos.
-
----
-
-## Configuración inicial en Supabase
-
-1. Ejecuta `supabase/schema.sql` en el SQL Editor de Supabase.
-2. Ejecuta `supabase/admin_rls.sql` en el SQL Editor de Supabase.
-3. Crea el usuario administrador en **Authentication > Users** del Dashboard de Supabase.
-4. Copia el UUID del usuario creado y ejecuta en el SQL Editor:
-
-```sql
-insert into public.admins (user_id, email)
-values ('<UUID del usuario>', '<email del admin>');
-```
-
----
-
 ## Credenciales del panel de administración
 
 | Campo | Valor |
@@ -170,7 +143,7 @@ values ('<UUID del usuario>', '<email del admin>');
 
 ```bash
 npm install
-cp .env.example .env   # Completa con tus credenciales de Supabase
+cp .env.example .env
 npm run dev
 ```
 
